@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::section})}">
+<body>
+<section th:fragment="section">
+    <div class="page-header">
+        <h1 th:text="${route.id != null} ? 'Редактирование маршрута' : 'Новый маршрут'">Маршрут</h1>
+        <a class="btn" th:href="@{/routes}">Назад</a>
+    </div>
+
+    <form class="form"
+          th:action="${route.id != null} ? @{/routes/{id}(id=${route.id})} : @{/routes}"
+          th:object="${route}" method="post">
+        <div class="field">
+            <label for="departureCityId">Город отправления *</label>
+            <select id="departureCityId" name="departureCityId" required>
+                <option value="">— выберите —</option>
+                <option th:each="city : ${cities}"
+                        th:value="${city.id}"
+                        th:text="${city.name}"
+                        th:selected="${departureCityId != null and departureCityId == city.id}"></option>
+            </select>
+        </div>
+        <div class="field">
+            <label for="arrivalCityId">Город прибытия *</label>
+            <select id="arrivalCityId" name="arrivalCityId" required>
+                <option value="">— выберите —</option>
+                <option th:each="city : ${cities}"
+                        th:value="${city.id}"
+                        th:text="${city.name}"
+                        th:selected="${arrivalCityId != null and arrivalCityId == city.id}"></option>
+            </select>
+        </div>
+        <div class="field">
+            <label for="departureTime">Время отправления *</label>
+            <input id="departureTime" type="time" th:field="*{departureTime}" required>
+            <span class="field-error" th:if="${#fields.hasErrors('departureTime')}" th:errors="*{departureTime}"></span>
+        </div>
+        <div class="field">
+            <label for="durationMinutes">Длительность (мин) *</label>
+            <input id="durationMinutes" type="number" th:field="*{durationMinutes}" min="1" required>
+            <span class="field-error" th:if="${#fields.hasErrors('durationMinutes')}" th:errors="*{durationMinutes}"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+</section>
+</body>
+</html>

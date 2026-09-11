@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::section})}">
+<body>
+<section th:fragment="section">
+    <div class="page-header">
+        <h1>Билеты</h1>
+        <a class="btn btn-primary" th:href="@{/tickets/sell}">Продать билет</a>
+    </div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>№</th>
+            <th>Пассажир</th>
+            <th>Маршрут</th>
+            <th>Дата поездки</th>
+            <th>Место</th>
+            <th>Цена</th>
+            <th>Статус</th>
+            <th>Продан</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="ticket : ${tickets}">
+            <td th:text="${ticket.id}"></td>
+            <td th:text="${ticket.passengerName}"></td>
+            <td th:text="${ticket.route.displayName}"></td>
+            <td th:text="${#temporals.format(ticket.travelDate, 'dd.MM.yyyy')}"></td>
+            <td th:text="${ticket.seatNumber}"></td>
+            <td th:text="${#numbers.formatDecimal(ticket.price.amount, 1, 'COMMA', 2, 'POINT')} + ' ₽'"></td>
+            <td>
+                <span class="badge" th:classappend="${ticket.status.name() == 'ACTIVE'} ? 'badge-success' : 'badge-muted'"
+                      th:text="${ticket.status.name() == 'ACTIVE'} ? 'Активен' : 'Отменён'"></span>
+            </td>
+            <td th:text="${#temporals.format(ticket.soldAt, 'dd.MM.yyyy HH:mm')}"></td>
+            <td class="actions">
+                <form th:if="${ticket.status.name() == 'ACTIVE'}"
+                      th:action="@{/tickets/{id}/cancel(id=${ticket.id})}" method="post" class="inline">
+                    <button type="submit" class="btn btn-sm btn-danger"
+                            onclick="return confirm('Отменить билет?')">Отменить</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(tickets)}">
+            <td colspan="9" class="empty">Билетов пока нет</td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+</body>
+</html>

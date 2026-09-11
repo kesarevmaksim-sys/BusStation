@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::section})}">
+<body>
+<section th:fragment="section">
+    <div class="page-header">
+        <h1>Продажа билета</h1>
+        <a class="btn" th:href="@{/tickets}">К списку билетов</a>
+    </div>
+
+    <form class="form" th:action="@{/tickets/sell}" method="post" id="sellForm">
+        <div class="field">
+            <label for="routeId">Маршрут *</label>
+            <select id="routeId" name="routeId" required>
+                <option value="">— выберите маршрут —</option>
+                <option th:each="route : ${routes}"
+                        th:value="${route.id}"
+                        th:text="${route.displayName}"></option>
+            </select>
+        </div>
+        <div class="field">
+            <label for="travelDate">Дата поездки *</label>
+            <input id="travelDate" name="travelDate" type="date"
+                   th:value="${travelDate}" required>
+        </div>
+        <div class="field">
+            <label for="priceId">Тариф *</label>
+            <select id="priceId" name="priceId" required>
+                <option value="">— сначала выберите маршрут и дату —</option>
+            </select>
+        </div>
+        <div class="field">
+            <label for="passengerName">ФИО пассажира *</label>
+            <input id="passengerName" name="passengerName" type="text" required maxlength="150">
+        </div>
+        <div class="field">
+            <label for="seatNumber">Номер места *</label>
+            <input id="seatNumber" name="seatNumber" type="number" min="1" max="50" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Оформить билет</button>
+    </form>
+
+    <script th:src="@{/js/sell-ticket.js}"></script>
+</section>
+</body>
+</html>

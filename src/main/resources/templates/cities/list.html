@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::section})}">
+<body>
+<section th:fragment="section">
+    <div class="page-header">
+        <h1>Города</h1>
+        <a class="btn btn-primary" th:href="@{/cities/new}">Добавить город</a>
+    </div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Название</th>
+            <th>Регион</th>
+            <th>Часовой пояс</th>
+            <th>Точное время</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="city : ${cities}">
+            <td th:text="${city.id}"></td>
+            <td th:text="${city.name}"></td>
+            <td th:text="${city.region} ?: '—'"></td>
+            <td>
+                <span th:text="${city.timezoneId} ?: '—'"></span>
+                <small th:if="${city.timezoneAbbreviation != null}"
+                       th:text="|${city.timezoneAbbreviation}, UTC${city.utcOffset}|"></small>
+            </td>
+            <td>
+                <span th:if="${city.localCurrentTime != null}"
+                      th:text="${#temporals.format(city.localCurrentTime, 'dd.MM.yyyy HH:mm:ss')}"></span>
+                <span th:unless="${city.localCurrentTime != null}">—</span>
+            </td>
+            <td class="actions">
+                <a class="btn btn-sm" th:href="@{/cities/{id}/edit(id=${city.id})}">Изменить</a>
+                <form th:action="@{/cities/{id}/delete(id=${city.id})}" method="post" class="inline">
+                    <button type="submit" class="btn btn-sm btn-danger"
+                            onclick="return confirm('Удалить город?')">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(cities)}">
+            <td colspan="6" class="empty">Нет данных</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p class="data-note">
+        Время в столбце «Точное время» может отставать от текущего в пределах 30 минут.
+        Данные приходят с информационного ресурса
+        <a href="https://timeapi.io/" target="_blank" rel="noopener noreferrer">TimeAPI.io</a>.
+    </p>
+</section>
+</body>
+</html>

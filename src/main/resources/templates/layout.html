@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} + ' — Автобусные билеты'">Автобусные билеты</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="header">
+    <div class="container header-inner">
+        <a class="logo" th:href="@{/}">BusTickets</a>
+        <nav class="nav">
+            <a th:href="@{/cities}">Города</a>
+            <a th:href="@{/routes}">Маршруты</a>
+            <a th:href="@{/prices}">Цены</a>
+            <a th:href="@{/tickets/sell}">Продать билет</a>
+            <a th:href="@{/tickets}">Билеты</a>
+        </nav>
+    </div>
+</header>
+
+<div class="route-background" aria-hidden="true">
+    <div class="route-line"></div>
+    <div class="route-stop route-stop-start"></div>
+    <div class="route-stop route-stop-finish"></div>
+    <div class="moving-bus">
+        <div class="bus-window bus-window-front"></div>
+        <div class="bus-window bus-window-rear"></div>
+        <div class="bus-door"></div>
+        <div class="bus-light"></div>
+        <div class="bus-wheel bus-wheel-front"></div>
+        <div class="bus-wheel bus-wheel-rear"></div>
+    </div>
+</div>
+
+<main class="container main">
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div th:replace="${content}">Content</div>
+</main>
+
+<footer class="footer">
+    <div class="container">Система продажи автобусных билетов</div>
+</footer>
+</body>
+</html>

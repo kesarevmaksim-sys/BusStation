@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::section})}">
+<body>
+<section th:fragment="section">
+    <h1>Автобусные билеты</h1>
+    <p class="subtitle">Система управления справочниками и продажей билетов</p>
+
+    <div class="cards">
+        <a class="card" th:href="@{/cities}">
+            <h2>Города</h2>
+            <p>Справочник городов отправления и прибытия</p>
+        </a>
+        <a class="card" th:href="@{/routes}">
+            <h2>Маршруты</h2>
+            <p>Расписание рейсов между городами</p>
+        </a>
+        <a class="card" th:href="@{/prices}">
+            <h2>Цены</h2>
+            <p>Тарифы на маршруты</p>
+        </a>
+        <a class="card card-accent" th:href="@{/tickets/sell}">
+            <h2>Продать билет</h2>
+            <p>Оформление нового билета пассажиру</p>
+        </a>
+        <a class="card" th:href="@{/tickets}">
+            <h2>Билеты</h2>
+            <p>Список проданных и отменённых билетов</p>
+        </a>
+    </div>
+</section>
+</body>
+</html>

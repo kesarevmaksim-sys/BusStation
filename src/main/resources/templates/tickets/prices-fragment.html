@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="prices">
+    <option value="">— выберите тариф —</option>
+    <option th:each="price : ${prices}"
+            th:value="${price.id}"
+            th:text="${#numbers.formatDecimal(price.amount, 1, 'COMMA', 2, 'POINT')} + ' ₽'"></option>
+    <option th:if="${#lists.isEmpty(prices)}" value="" disabled>Нет тарифов на эту дату</option>
+</th:block>
+</body>
+</html>

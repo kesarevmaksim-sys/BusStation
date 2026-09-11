@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::section})}">
+<body>
+<section th:fragment="section">
+    <div class="page-header">
+        <h1>Маршруты</h1>
+        <a class="btn btn-primary" th:href="@{/routes/new}">Добавить маршрут</a>
+    </div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Откуда</th>
+            <th>Куда</th>
+            <th>Отправление</th>
+            <th>Длительность</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="route : ${routes}">
+            <td th:text="${route.id}"></td>
+            <td th:text="${route.departureCity.name}"></td>
+            <td th:text="${route.arrivalCity.name}"></td>
+            <td th:text="${#temporals.format(route.departureTime, 'HH:mm')}"></td>
+            <td th:text="${route.durationMinutes} + ' мин'"></td>
+            <td class="actions">
+                <a class="btn btn-sm" th:href="@{/routes/{id}/edit(id=${route.id})}">Изменить</a>
+                <form th:action="@{/routes/{id}/delete(id=${route.id})}" method="post" class="inline">
+                    <button type="submit" class="btn btn-sm btn-danger"
+                            onclick="return confirm('Удалить маршрут?')">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(routes)}">
+            <td colspan="6" class="empty">Нет данных</td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+</body>
+</html>

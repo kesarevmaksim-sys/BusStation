@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::section})}">
+<body>
+<section th:fragment="section">
+    <div class="page-header">
+        <h1>Цены</h1>
+        <a class="btn btn-primary" th:href="@{/prices/new}">Добавить цену</a>
+    </div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Маршрут</th>
+            <th>Цена</th>
+            <th>Действует с</th>
+            <th>Действует до</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="price : ${prices}">
+            <td th:text="${price.id}"></td>
+            <td th:text="${price.route.displayName}"></td>
+            <td th:text="${#numbers.formatDecimal(price.amount, 1, 'COMMA', 2, 'POINT')} + ' ₽'"></td>
+            <td th:text="${#temporals.format(price.validFrom, 'dd.MM.yyyy')}"></td>
+            <td th:text="${price.validTo != null} ? ${#temporals.format(price.validTo, 'dd.MM.yyyy')} : '—'"></td>
+            <td class="actions">
+                <a class="btn btn-sm" th:href="@{/prices/{id}/edit(id=${price.id})}">Изменить</a>
+                <form th:action="@{/prices/{id}/delete(id=${price.id})}" method="post" class="inline">
+                    <button type="submit" class="btn btn-sm btn-danger"
+                            onclick="return confirm('Удалить цену?')">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(prices)}">
+            <td colspan="6" class="empty">Нет данных</td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+</body>
+</html>
