@@ -1,6 +1,6 @@
 package com.bustickets.web;
 
-import com.bustickets.model.City;
+import com.bustickets.dto.CityForm;
 import com.bustickets.service.CityService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -33,18 +33,19 @@ public class CityController {
     @GetMapping("/new")
     public String createForm(Model model) {
         model.addAttribute("pageTitle", "Новый город");
-        model.addAttribute("city", new City());
+        model.addAttribute("city", new CityForm());
         return "cities/form";
     }
 
     @PostMapping
-    public String create(@Valid @ModelAttribute("city") City city,
+    public String create(@Valid @ModelAttribute("city") CityForm city,
                          BindingResult bindingResult,
                          RedirectAttributes redirectAttributes) {
+        city.setId(null);
         if (bindingResult.hasErrors()) {
             return "cities/form";
         }
-        cityService.save(city);
+        cityService.save(city.toEntity());
         redirectAttributes.addFlashAttribute("success", "Город добавлен");
         return "redirect:/cities";
     }
@@ -52,20 +53,22 @@ public class CityController {
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         model.addAttribute("pageTitle", "Редактирование города");
-        model.addAttribute("city", cityService.findById(id));
+        model.addAttribute("city", CityForm.from(cityService.findById(id)));
         return "cities/form";
     }
 
     @PostMapping("/{id}")
     public String update(@PathVariable Long id,
-                         @Valid @ModelAttribute("city") City city,
+                         @Valid @ModelAttribute("city") CityForm city,
                          BindingResult bindingResult,
                          RedirectAttributes redirectAttributes) {
+        city.setId(id);
         if (bindingResult.hasErrors()) {
             return "cities/form";
         }
-        city.setId(id);
-        cityService.save(city);
+        var entity = city.toEntity();
+        entity.setId(id);
+        cityService.save(entity);
         redirectAttributes.addFlashAttribute("success", "Город обновлён");
         return "redirect:/cities";
     }

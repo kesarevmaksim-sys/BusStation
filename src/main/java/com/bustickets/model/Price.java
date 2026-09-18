@@ -11,11 +11,16 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "prices")
+@Getter
+@Setter
 public class Price {
 
     @Id
@@ -39,43 +44,4 @@ public class Price {
     @Column(name = "valid_to")
     private LocalDate validTo;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Route getRoute() {
-        return route;
-    }
-
-    public void setRoute(Route route) {
-        this.route = route;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public LocalDate getValidFrom() {
-        return validFrom;
-    }
-
-    public void setValidFrom(LocalDate validFrom) {
-        this.validFrom = validFrom;
-    }
-
-    public LocalDate getValidTo() {
-        return validTo;
-    }
-
-    public void setValidTo(LocalDate validTo) {
-        this.validTo = validTo;
-    }
 }

@@ -8,34 +8,40 @@
         <a class="btn" th:href="@{/tickets}">К списку билетов</a>
     </div>
 
-    <form class="form" th:action="@{/tickets/sell}" method="post" id="sellForm">
+    <form class="form" th:action="@{/tickets/sell}" th:object="${sale}" method="post" id="sellForm">
         <div class="field">
             <label for="routeId">Маршрут *</label>
-            <select id="routeId" name="routeId" required>
+            <select id="routeId" th:field="*{routeId}" required>
                 <option value="">— выберите маршрут —</option>
                 <option th:each="route : ${routes}"
                         th:value="${route.id}"
                         th:text="${route.displayName}"></option>
             </select>
+            <span class="field-error" th:if="${#fields.hasErrors('routeId')}" th:errors="*{routeId}"></span>
         </div>
         <div class="field">
             <label for="travelDate">Дата поездки *</label>
-            <input id="travelDate" name="travelDate" type="date"
-                   th:value="${travelDate}" required>
+            <input id="travelDate" th:field="*{travelDate}" type="date" required>
+            <span class="field-error" th:if="${#fields.hasErrors('travelDate')}" th:errors="*{travelDate}"></span>
         </div>
         <div class="field">
             <label for="priceId">Тариф *</label>
-            <select id="priceId" name="priceId" required>
+            <select id="priceId" th:field="*{priceId}" required>
                 <option value="">— сначала выберите маршрут и дату —</option>
+                <option th:each="price : ${prices}" th:value="${price.id}"
+                        th:text="${price.amount + ' ₽'}"></option>
             </select>
+            <span class="field-error" th:if="${#fields.hasErrors('priceId')}" th:errors="*{priceId}"></span>
         </div>
         <div class="field">
             <label for="passengerName">ФИО пассажира *</label>
-            <input id="passengerName" name="passengerName" type="text" required maxlength="150">
+            <input id="passengerName" th:field="*{passengerName}" type="text" required maxlength="150">
+            <span class="field-error" th:if="${#fields.hasErrors('passengerName')}" th:errors="*{passengerName}"></span>
         </div>
         <div class="field">
             <label for="seatNumber">Номер места *</label>
-            <input id="seatNumber" name="seatNumber" type="number" min="1" max="50" required>
+            <input id="seatNumber" th:field="*{seatNumber}" type="number" min="1" max="50" required>
+            <span class="field-error" th:if="${#fields.hasErrors('seatNumber')}" th:errors="*{seatNumber}"></span>
         </div>
         <button type="submit" class="btn btn-primary">Оформить билет</button>
     </form>

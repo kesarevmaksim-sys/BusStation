@@ -13,13 +13,13 @@
           th:object="${price}" method="post">
         <div class="field">
             <label for="routeId">Маршрут *</label>
-            <select id="routeId" name="routeId" required>
+            <select id="routeId" th:field="*{routeId}" required>
                 <option value="">— выберите —</option>
                 <option th:each="route : ${routes}"
                         th:value="${route.id}"
-                        th:text="${route.displayName}"
-                        th:selected="${routeId != null and routeId == route.id}"></option>
+                        th:text="${route.displayName}"></option>
             </select>
+            <span class="field-error" th:if="${#fields.hasErrors('routeId')}" th:errors="*{routeId}"></span>
         </div>
         <div class="field">
             <label for="amount">Сумма (₽) *</label>

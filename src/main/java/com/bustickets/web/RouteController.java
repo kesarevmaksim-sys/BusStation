@@ -1,6 +1,6 @@
 package com.bustickets.web;
 
-import com.bustickets.model.Route;
+import com.bustickets.dto.RouteForm;
 import com.bustickets.service.CityService;
 import com.bustickets.service.RouteService;
 import jakarta.validation.Valid;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -36,30 +35,29 @@ public class RouteController {
 
     @GetMapping("/new")
     public String createForm(Model model) {
-        populateForm(model, new Route(), null, null);
+        populateForm(model, new RouteForm());
         model.addAttribute("pageTitle", "Новый маршрут");
         return "routes/form";
     }
 
     @PostMapping
-    public String create(@Valid @ModelAttribute("route") Route route,
+    public String create(@Valid @ModelAttribute("route") RouteForm route,
                          BindingResult bindingResult,
-                         @RequestParam Long departureCityId,
-                         @RequestParam Long arrivalCityId,
                          RedirectAttributes redirectAttributes,
                          Model model) {
+        route.setId(null);
         if (bindingResult.hasErrors()) {
-            populateForm(model, route, departureCityId, arrivalCityId);
+            populateForm(model, route);
             model.addAttribute("pageTitle", "Новый маршрут");
             return "routes/form";
         }
         try {
-            routeService.save(route, departureCityId, arrivalCityId);
+            routeService.save(route.toEntity(), route.getDepartureCityId(), route.getArrivalCityId());
             redirectAttributes.addFlashAttribute("success", "Маршрут добавлен");
             return "redirect:/routes";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
-            populateForm(model, route, departureCityId, arrivalCityId);
+            populateForm(model, route);
             model.addAttribute("pageTitle", "Новый маршрут");
             return "routes/form";
         }
@@ -68,32 +66,32 @@ public class RouteController {
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         var route = routeService.findById(id);
-        populateForm(model, route, route.getDepartureCity().getId(), route.getArrivalCity().getId());
+        populateForm(model, RouteForm.from(route));
         model.addAttribute("pageTitle", "Редактирование маршрута");
         return "routes/form";
     }
 
     @PostMapping("/{id}")
     public String update(@PathVariable Long id,
-                         @Valid @ModelAttribute("route") Route route,
+                         @Valid @ModelAttribute("route") RouteForm route,
                          BindingResult bindingResult,
-                         @RequestParam Long departureCityId,
-                         @RequestParam Long arrivalCityId,
                          RedirectAttributes redirectAttributes,
                          Model model) {
+        route.setId(id);
         if (bindingResult.hasErrors()) {
-            populateForm(model, route, departureCityId, arrivalCityId);
+            populateForm(model, route);
             model.addAttribute("pageTitle", "Редактирование маршрута");
             return "routes/form";
         }
         try {
-            route.setId(id);
-            routeService.save(route, departureCityId, arrivalCityId);
+            var entity = route.toEntity();
+            entity.setId(id);
+            routeService.save(entity, route.getDepartureCityId(), route.getArrivalCityId());
             redirectAttributes.addFlashAttribute("success", "Маршрут обновлён");
             return "redirect:/routes";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
-            populateForm(model, route, departureCityId, arrivalCityId);
+            populateForm(model, route);
             model.addAttribute("pageTitle", "Редактирование маршрута");
             return "routes/form";
         }
@@ -110,10 +108,8 @@ public class RouteController {
         return "redirect:/routes";
     }
 
-    private void populateForm(Model model, Route route, Long departureCityId, Long arrivalCityId) {
+    private void populateForm(Model model, RouteForm route) {
         model.addAttribute("route", route);
         model.addAttribute("cities", cityService.findAll());
-        model.addAttribute("departureCityId", departureCityId);
-        model.addAttribute("arrivalCityId", arrivalCityId);
     }
 }

@@ -15,11 +15,16 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tickets")
+@Getter
+@Setter
 public class Ticket {
 
     public enum Status {
@@ -62,67 +67,4 @@ public class Ticket {
     @Column(name = "sold_at", nullable = false)
     private LocalDateTime soldAt = LocalDateTime.now();
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Route getRoute() {
-        return route;
-    }
-
-    public void setRoute(Route route) {
-        this.route = route;
-    }
-
-    public Price getPrice() {
-        return price;
-    }
-
-    public void setPrice(Price price) {
-        this.price = price;
-    }
-
-    public String getPassengerName() {
-        return passengerName;
-    }
-
-    public void setPassengerName(String passengerName) {
-        this.passengerName = passengerName;
-    }
-
-    public Integer getSeatNumber() {
-        return seatNumber;
-    }
-
-    public void setSeatNumber(Integer seatNumber) {
-        this.seatNumber = seatNumber;
-    }
-
-    public LocalDate getTravelDate() {
-        return travelDate;
-    }
-
-    public void setTravelDate(LocalDate travelDate) {
-        this.travelDate = travelDate;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getSoldAt() {
-        return soldAt;
-    }
-
-    public void setSoldAt(LocalDateTime soldAt) {
-        this.soldAt = soldAt;
-    }
 }

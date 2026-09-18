@@ -9,12 +9,17 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "cities")
+@Getter
+@Setter
 public class City {
 
     @Id
@@ -48,76 +53,12 @@ public class City {
     @Column(name = "time_updated_at")
     private OffsetDateTime timeUpdatedAt;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getRegion() {
-        return region;
-    }
-
-    public void setRegion(String region) {
-        this.region = region;
-    }
-
-    public String getTimezoneId() {
-        return timezoneId;
-    }
-
-    public void setTimezoneId(String timezoneId) {
-        this.timezoneId = timezoneId;
-    }
-
-    public String getTimezoneAbbreviation() {
-        return timezoneAbbreviation;
-    }
-
-    public void setTimezoneAbbreviation(String timezoneAbbreviation) {
-        this.timezoneAbbreviation = timezoneAbbreviation;
-    }
-
-    public String getUtcOffset() {
-        return utcOffset;
-    }
-
-    public void setUtcOffset(String utcOffset) {
-        this.utcOffset = utcOffset;
-    }
-
-    public OffsetDateTime getCurrentTime() {
-        return currentTime;
-    }
-
-    public void setCurrentTime(OffsetDateTime currentTime) {
-        this.currentTime = currentTime;
-    }
-
     @Transient
     public ZonedDateTime getLocalCurrentTime() {
         if (currentTime == null || timezoneId == null || timezoneId.isBlank()) {
             return null;
         }
         return currentTime.atZoneSameInstant(ZoneId.of(timezoneId));
-    }
-
-    public OffsetDateTime getTimeUpdatedAt() {
-        return timeUpdatedAt;
-    }
-
-    public void setTimeUpdatedAt(OffsetDateTime timeUpdatedAt) {
-        this.timeUpdatedAt = timeUpdatedAt;
     }
 
     @Transient

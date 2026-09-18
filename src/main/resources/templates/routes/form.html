@@ -13,23 +13,23 @@
           th:object="${route}" method="post">
         <div class="field">
             <label for="departureCityId">Город отправления *</label>
-            <select id="departureCityId" name="departureCityId" required>
+            <select id="departureCityId" th:field="*{departureCityId}" required>
                 <option value="">— выберите —</option>
                 <option th:each="city : ${cities}"
                         th:value="${city.id}"
-                        th:text="${city.name}"
-                        th:selected="${departureCityId != null and departureCityId == city.id}"></option>
+                        th:text="${city.name}"></option>
             </select>
+            <span class="field-error" th:if="${#fields.hasErrors('departureCityId')}" th:errors="*{departureCityId}"></span>
         </div>
         <div class="field">
             <label for="arrivalCityId">Город прибытия *</label>
-            <select id="arrivalCityId" name="arrivalCityId" required>
+            <select id="arrivalCityId" th:field="*{arrivalCityId}" required>
                 <option value="">— выберите —</option>
                 <option th:each="city : ${cities}"
                         th:value="${city.id}"
-                        th:text="${city.name}"
-                        th:selected="${arrivalCityId != null and arrivalCityId == city.id}"></option>
+                        th:text="${city.name}"></option>
             </select>
+            <span class="field-error" th:if="${#fields.hasErrors('arrivalCityId')}" th:errors="*{arrivalCityId}"></span>
         </div>
         <div class="field">
             <label for="departureTime">Время отправления *</label>

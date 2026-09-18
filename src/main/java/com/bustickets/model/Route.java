@@ -11,10 +11,15 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalTime;
 
 @Entity
 @Table(name = "routes")
+@Getter
+@Setter
 public class Route {
 
     @Id
@@ -37,46 +42,6 @@ public class Route {
     @Min(1)
     @Column(name = "duration_minutes", nullable = false)
     private Integer durationMinutes;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public City getDepartureCity() {
-        return departureCity;
-    }
-
-    public void setDepartureCity(City departureCity) {
-        this.departureCity = departureCity;
-    }
-
-    public City getArrivalCity() {
-        return arrivalCity;
-    }
-
-    public void setArrivalCity(City arrivalCity) {
-        this.arrivalCity = arrivalCity;
-    }
-
-    public LocalTime getDepartureTime() {
-        return departureTime;
-    }
-
-    public void setDepartureTime(LocalTime departureTime) {
-        this.departureTime = departureTime;
-    }
-
-    public Integer getDurationMinutes() {
-        return durationMinutes;
-    }
-
-    public void setDurationMinutes(Integer durationMinutes) {
-        this.durationMinutes = durationMinutes;
-    }
 
     public String getDisplayName() {
         return departureCity.getName() + " → " + arrivalCity.getName()

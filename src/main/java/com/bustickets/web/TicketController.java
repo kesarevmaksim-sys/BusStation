@@ -1,12 +1,16 @@
 package com.bustickets.web;
 
+import com.bustickets.dto.TicketSaleForm;
 import com.bustickets.service.PriceService;
 import com.bustickets.service.RouteService;
 import com.bustickets.service.TicketService;
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +45,7 @@ public class TicketController {
     public String sellForm(Model model) {
         model.addAttribute("pageTitle", "Продажа билета");
         model.addAttribute("routes", routeService.findAll());
-        model.addAttribute("travelDate", LocalDate.now().plusDays(1));
+        model.addAttribute("sale", new TicketSaleForm());
         return "tickets/sell";
     }
 
@@ -54,20 +58,33 @@ public class TicketController {
     }
 
     @PostMapping("/sell")
-    public String sell(@RequestParam Long routeId,
-                       @RequestParam Long priceId,
-                       @RequestParam String passengerName,
-                       @RequestParam Integer seatNumber,
-                       @RequestParam LocalDate travelDate,
-                       RedirectAttributes redirectAttributes) {
+    public String sell(@Valid @ModelAttribute("sale") TicketSaleForm sale,
+                       BindingResult bindingResult,
+                       RedirectAttributes redirectAttributes,
+                       Model model) {
+        if (bindingResult.hasErrors()) {
+            populateSaleForm(model, sale);
+            return "tickets/sell";
+        }
         try {
-            var ticket = ticketService.sell(routeId, priceId, passengerName, seatNumber, travelDate);
+            var ticket = ticketService.sell(sale.getRouteId(), sale.getPriceId(),
+                    sale.getPassengerName(), sale.getSeatNumber(), sale.getTravelDate());
             redirectAttributes.addFlashAttribute("success",
-                    "Билет №" + ticket.getId() + " продан пассажиру " + passengerName);
+                    "Билет №" + ticket.getId() + " продан пассажиру " + sale.getPassengerName());
             return "redirect:/tickets";
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/tickets/sell";
+            model.addAttribute("error", e.getMessage());
+            populateSaleForm(model, sale);
+            return "tickets/sell";
+        }
+    }
+
+    private void populateSaleForm(Model model, TicketSaleForm sale) {
+        model.addAttribute("pageTitle", "Продажа билета");
+        model.addAttribute("routes", routeService.findAll());
+        if (sale.getRouteId() != null && sale.getTravelDate() != null) {
+            model.addAttribute("prices", priceService.findActiveForRoute(
+                    sale.getRouteId(), sale.getTravelDate()));
         }
     }
 

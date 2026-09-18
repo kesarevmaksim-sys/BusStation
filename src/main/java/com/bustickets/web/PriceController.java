@@ -1,10 +1,9 @@
 package com.bustickets.web;
 
-import com.bustickets.model.Price;
+import com.bustickets.dto.PriceForm;
 import com.bustickets.service.PriceService;
 import com.bustickets.service.RouteService;
 import jakarta.validation.Valid;
-import java.time.LocalDate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -37,29 +35,29 @@ public class PriceController {
 
     @GetMapping("/new")
     public String createForm(Model model) {
-        populateForm(model, newPrice(), null);
+        populateForm(model, new PriceForm());
         model.addAttribute("pageTitle", "Новая цена");
         return "prices/form";
     }
 
     @PostMapping
-    public String create(@Valid @ModelAttribute("price") Price price,
+    public String create(@Valid @ModelAttribute("price") PriceForm price,
                          BindingResult bindingResult,
-                         @RequestParam Long routeId,
                          RedirectAttributes redirectAttributes,
                          Model model) {
+        price.setId(null);
         if (bindingResult.hasErrors()) {
-            populateForm(model, price, routeId);
+            populateForm(model, price);
             model.addAttribute("pageTitle", "Новая цена");
             return "prices/form";
         }
         try {
-            priceService.save(price, routeId);
+            priceService.save(price.toEntity(), price.getRouteId());
             redirectAttributes.addFlashAttribute("success", "Цена добавлена");
             return "redirect:/prices";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
-            populateForm(model, price, routeId);
+            populateForm(model, price);
             model.addAttribute("pageTitle", "Новая цена");
             return "prices/form";
         }
@@ -68,31 +66,32 @@ public class PriceController {
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         var price = priceService.findById(id);
-        populateForm(model, price, price.getRoute().getId());
+        populateForm(model, PriceForm.from(price));
         model.addAttribute("pageTitle", "Редактирование цены");
         return "prices/form";
     }
 
     @PostMapping("/{id}")
     public String update(@PathVariable Long id,
-                         @Valid @ModelAttribute("price") Price price,
+                         @Valid @ModelAttribute("price") PriceForm price,
                          BindingResult bindingResult,
-                         @RequestParam Long routeId,
                          RedirectAttributes redirectAttributes,
                          Model model) {
+        price.setId(id);
         if (bindingResult.hasErrors()) {
-            populateForm(model, price, routeId);
+            populateForm(model, price);
             model.addAttribute("pageTitle", "Редактирование цены");
             return "prices/form";
         }
         try {
-            price.setId(id);
-            priceService.save(price, routeId);
+            var entity = price.toEntity();
+            entity.setId(id);
+            priceService.save(entity, price.getRouteId());
             redirectAttributes.addFlashAttribute("success", "Цена обновлена");
             return "redirect:/prices";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
-            populateForm(model, price, routeId);
+            populateForm(model, price);
             model.addAttribute("pageTitle", "Редактирование цены");
             return "prices/form";
         }
@@ -105,15 +104,8 @@ public class PriceController {
         return "redirect:/prices";
     }
 
-    private Price newPrice() {
-        var price = new Price();
-        price.setValidFrom(LocalDate.now());
-        return price;
-    }
-
-    private void populateForm(Model model, Price price, Long routeId) {
+    private void populateForm(Model model, PriceForm price) {
         model.addAttribute("price", price);
         model.addAttribute("routes", routeService.findAll());
-        model.addAttribute("routeId", routeId);
     }
 }
